@@ -31,5 +31,73 @@ async function doWork() {
     console.log(e);
   }
 }
+async function doWork() {
+  try {
+    // 遇到await會直接暫停 async 後面宣告的函示 直到其他程式跑完
+    // 每一段await就相當於 .then() 當遇到一段await會暫停整個函示
+    // 當出現resolve或reject後 才會執行下一個await
+    let result1 = await doWorkPromise("刷牙", 3000);
+    console.log(result1);
+
+    let result2 = await doWorkPromise("吃飯", 3000);
+    console.log(result2);
+
+    let result3 = await doWorkPromise("寫功課", 3000);
+    console.log(result3);
+  } catch (e) {
+    console.log(e);
+  }
+}
+async function doWork() {
+  try {
+    // 遇到await會直接暫停 async 後面宣告的函示 直到其他程式跑完
+    // 每一段await就相當於 .then() 當遇到一段await會暫停整個函示
+    // 當出現resolve或reject後 才會執行下一個await
+    let result1 = await doWorkPromise("刷牙", 3000);
+    console.log(result1);
+
+    let result2 = await doWorkPromise("吃飯", 3000);
+    console.log(result2);
+
+    let result3 = await doWorkPromise("寫功課", 3000);
+    console.log(result3);
+  } catch (e) {
+    console.log(e);
+  }
+}
+async function doWork() {
+  try {
+    // 遇到await會直接暫停 async 後面宣告的函示 直到其他程式跑完
+    // 每一段await就相當於 .then() 當遇到一段await會暫停整個函示
+    // 當出現resolve或reject後 才會執行下一個await
+    let result1 = await doWorkPromise("刷牙", 3000);
+    console.log(result1);
+
+    let result2 = await doWorkPromise("吃飯", 3000);
+    console.log(result2);
+
+    let result3 = await doWorkPromise("寫功課", 3000);
+    console.log(result3);
+  } catch (e) {
+    console.log(e);
+  }
+}
+async function doWork() {
+  try {
+    // 遇到await會直接暫停 async 後面宣告的函示 直到其他程式跑完
+    // 每一段await就相當於 .then() 當遇到一段await會暫停整個函示
+    // 當出現resolve或reject後 才會執行下一個await
+    let result1 = await doWorkPromise("刷牙", 3000);
+    console.log(result1);
+
+    let result2 = await doWorkPromise("吃飯", 3000);
+    console.log(result2);
+
+    let result3 = await doWorkPromise("寫功課", 3000);
+    console.log(result3);
+  } catch (e) {
+    console.log(e);
+  }
+}
 doWork();
 console.log("-dash-");
