@@ -11,7 +11,7 @@ const axios = require("axios");
 const fs = require("fs/promises");
 
 const moment = require("moment");
-
+const mysql2 = require("mysql2");
 // http://54.71.133.152:3000/stocks?stockNo=2618&date=202211
 // 2618, 2330, 2412
 
