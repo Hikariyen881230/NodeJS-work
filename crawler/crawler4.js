@@ -7,6 +7,7 @@
 // 2. 引用 require
 // 3. 去讀官方文件
 const axios = require("axios");
+require("dotenv").config();
 // fs 是 NodeJS 內建的，所以不用特別安裝
 const fs = require("fs/promises");
 
@@ -17,6 +18,14 @@ const mysql2 = require("mysql2");
 
 (async () => {
   try {
+    const connection = await mysql2.createConnection({
+      host: process.env.DB_HOST,
+      port: process.env.DB_PORT,
+      user: process.env.DB_USER,
+      password: process.env.DB_PWD,
+      database: process.env.DB_DATABASE,
+    });
+
     let stockNo = await fs.readFile("stock.txt", "utf-8");
     console.log(stockNo);
     let date = moment().format("YYYYMMDD");
