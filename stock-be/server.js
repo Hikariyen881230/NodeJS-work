@@ -1,6 +1,23 @@
 const express = require('express')
 // 利用 express 這個框架建立一個 web app
 const app = express()
+const mysql2 = require('mysql2/promise')
+require('dotenv').config()
+
+// 設計一個連線池
+let pool = mysql2.createPool({
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  user: process.env.DB_USER,
+  password: process.env.DB_PWD,
+  database: process.env.DB_DATABASE,
+  // 設定連線數上限
+  connectionLimit: 10,
+})
+
+// 利用cors 允許跨源存取
+const cors = require('cors')
+app.use(cors())
 
 // middleware => pipeline pattern
 
@@ -31,6 +48,20 @@ app.use((req, res, next) => {
 app.get('/', (req, res, next) => {
   console.log('這裡是首頁 2', req.mfee31, req.dt)
   res.send('Hello Express 9')
+})
+
+// app.get('/api', (req, res, next) => {
+//   res.json({
+//     name: 'John',
+//     age: '15,',
+//   })
+// })
+
+// 建立第一個stock api
+app.get('/api/stocks', async (req, res, next) => {
+  // 從資料表撈資料
+  let [data] = await pool.query('SELECT * FROM stocks')
+  res.json(data)
 })
 
 app.use((req, res, next) => {
