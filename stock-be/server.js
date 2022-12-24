@@ -6,7 +6,10 @@ const app = express()
 
 // 設定express處理靜態檔案
 // 不需要安裝任何東西
-app.use(express.static('./static'))
+// 預設在首頁
+// app.use(express.static('./static'))
+// 設定一個前綴路徑
+app.use('/2048', express.static('./static'))
 
 // 中間件
 app.use((req, res, next) => {
