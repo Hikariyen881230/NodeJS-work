@@ -34,8 +34,11 @@ const Stock = () => {
 
       {stocks.map((stock) => {
         return (
-          <div className="bg-white bg-gray-50 p-6 rounded-lg shadow hover:shadow-lg m-6 cursor-pointer">
-            <Link to={'/stock/1234'}>
+          <div
+            key={stock.id}
+            className="bg-white bg-gray-50 p-6 rounded-lg shadow hover:shadow-lg m-6 cursor-pointer"
+          >
+            <Link to={`/stock/${stock.id}`}>
               <h2 className="text-2xl font-bold mb-2 text-gray-800">
                 股票代碼 : {stock.id}
               </h2>

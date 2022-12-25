@@ -13,6 +13,8 @@ let pool = mysql2.createPool({
   database: process.env.DB_DATABASE,
   // 設定連線數上限
   connectionLimit: 10,
+  // 將日期設定為字串
+  dateStrings: true,
 })
 
 // 利用cors 允許跨源存取
@@ -61,6 +63,16 @@ app.get('/', (req, res, next) => {
 app.get('/api/stocks', async (req, res, next) => {
   // 從資料表撈資料
   let [data] = await pool.query('SELECT * FROM stocks')
+  res.json(data)
+})
+
+app.get('/api/stocks/:stockId', async (req, res, next) => {
+  console.log('/api/stocks/:stockId=>', req.params.stockId)
+  // 用? +陣列的方式避免SQL injection
+  let [data] = await pool.query('SELECT * FROM stock_prices WHERE stock_id=?', [
+    req.params.stockId,
+  ])
+  console.log('get data,', data)
   res.json(data)
 })
 
