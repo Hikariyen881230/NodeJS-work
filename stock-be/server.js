@@ -18,6 +18,7 @@ let pool = mysql2.createPool({
 })
 
 // 利用cors 允許跨源存取
+// 不加上去會有cors錯誤
 const cors = require('cors')
 app.use(cors())
 
@@ -85,6 +86,20 @@ app.get('/test', (req, res, next) => {
   console.log('這裡是 test 頁面', req.dt)
   res.send('Hello Test 1')
   next()
+})
+
+// 12/24作業 新增股票
+app.use(express.json())
+app.post('/api/stocks', async (req, res, next) => {
+  // 從資料表撈資料
+  console.log(req.body)
+  let { stockId, stockName } = req.body
+  console.log(stockId, stockName)
+  await pool.query('INSERT INTO stocks (id,name) VALUES (?,?)', [
+    stockId,
+    stockName,
+  ])
+  res.json('新增成功')
 })
 
 // 放在所有的路由中間件的後面
