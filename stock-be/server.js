@@ -44,67 +44,10 @@ app.get('/', (req, res, next) => {
   res.send('Hello Express 9')
 })
 
-// app.get('/api', (req, res, next) => {
-//   res.json({
-//     name: 'John',
-//     age: '15,',
-//   })
-// })
-
-// 建立第一個stock api
-app.get('/api/stocks', async (req, res, next) => {
-  // 從資料表撈資料
-  let [data] = await pool.query('SELECT * FROM stocks')
-  res.json(data)
-})
-
-app.get('/api/stocks/:stockId', async (req, res, next) => {
-  console.log('/api/stocks/:stockId=>', req.params.stockId)
-  // 用? +陣列的方式避免SQL injection
-  // let [data] = await pool.query('SELECT * FROM stock_prices WHERE stock_id=?', [
-  //   req.params.stockId,
-  // ])
-  // console.log('get data,', data)
-
-  // TODO: 01/27做分頁
-  // 從前端拿到目前是要第幾頁
-  // 通常會放在 query string -> req.query.page(根據 ? 後面接的字串來決定)
-  // api/stocks/:stockId?page=2
-  // 如果第一頁沒有 page=1(undefined) 的 query string 就預設為1
-  const page = req.query.page || 1
-
-  // 有幾筆資料
-  let [result] = await pool.execute(
-    'SELECT COUNT (*) AS total FROM stock_prices WHERE stock_id=?',
-    [req.params.stockId]
-  )
-  console.log('SET/stocks/details =>', result)
-
-  // const total = result[0] // output: [ { total: 34 } ]
-  const total = result[0].total // output: [ { total: 34 } ]
-
-  // 總共有幾頁
-  const perPage = 5
-  const totalPage = Math.ceil(total / perPage)
-  // 計算 offset ,limit (一頁幾筆)
-  const limit = perPage
-  const offset = limit * (page - 1)
-  // 根據 offset 和 limit 取得資料
-  let [data] = await pool.execute(
-    'SELECT * FROM stock_prices WHERE stock_id=? ORDER BY date LIMIT ? OFFSET ?',
-    [req.params.stockId, perPage, offset]
-  )
-  // 回覆給前端
-  res.json({
-    pagination: {
-      perPage: perPage,
-      totalPage, // 變數名稱跟 key名稱一樣 可以直接放進來
-      page,
-    },
-    data,
-  })
-  // res.json(data)
-})
+// 引入 stockRouter
+const stockRouter = require('./routers/stockRouter')
+// 將相同的路由移出來
+app.use('/api/stocks', stockRouter)
 
 app.use((req, res, next) => {
   console.log('這裡是的一個中間件 C')
@@ -118,18 +61,6 @@ app.get('/test', (req, res, next) => {
 })
 
 // 12/24作業 新增股票
-
-app.post('/api/stocks', async (req, res, next) => {
-  // 從資料表撈資料 要使用 req.body
-  console.log('POST/api/stocks', req.body)
-  let { stockId, stockName } = req.body
-  console.log('解構資料', stockId, stockName)
-  await pool.query('INSERT INTO stocks (id,name) VALUES (?,?)', [
-    stockId,
-    stockName,
-  ])
-  res.json({ result: 'ok' })
-})
 
 // 放在所有的路由中間件的後面
 // 前面所有的路由都比不到對的網址時，就會掉到這裡來
