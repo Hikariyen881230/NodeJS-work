@@ -1,10 +1,10 @@
 const express = require('express')
 // 利用 express 這個框架建立一個 web app
 const app = express()
-const mysql2 = require('mysql2/promise')
 require('dotenv').config()
 
 // 設計一個連線池
+const mysql2 = require('mysql2/promise')
 let pool = mysql2.createPool({
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
@@ -16,6 +16,9 @@ let pool = mysql2.createPool({
   // 將日期設定為字串
   dateStrings: true,
 })
+
+// requset content-type是 json 要加上
+app.use(express.json())
 
 // 利用cors 允許跨源存取
 // 不加上去會有cors錯誤
@@ -70,11 +73,49 @@ app.get('/api/stocks', async (req, res, next) => {
 app.get('/api/stocks/:stockId', async (req, res, next) => {
   console.log('/api/stocks/:stockId=>', req.params.stockId)
   // 用? +陣列的方式避免SQL injection
-  let [data] = await pool.query('SELECT * FROM stock_prices WHERE stock_id=?', [
-    req.params.stockId,
-  ])
-  console.log('get data,', data)
-  res.json(data)
+  // let [data] = await pool.query('SELECT * FROM stock_prices WHERE stock_id=?', [
+  //   req.params.stockId,
+  // ])
+  // console.log('get data,', data)
+
+  // TODO: 01/27做分頁
+  // 從前端拿到目前是要第幾頁
+  // 通常會放在 query string -> req.query.page(根據 ? 後面接的字串來決定)
+  // api/stocks/:stockId?page=2
+  // 如果第一頁沒有 page=1(undefined) 的 query string 就預設為1
+  const page = req.query.page || 1
+
+  // 有幾筆資料
+  let [result] = await pool.execute(
+    'SELECT COUNT (*) AS total FROM stock_prices WHERE stock_id=?',
+    [req.params.stockId]
+  )
+  console.log('SET/stocks/details =>', result)
+
+  // const total = result[0] // output: [ { total: 34 } ]
+  const total = result[0].total // output: [ { total: 34 } ]
+
+  // 總共有幾頁
+  const perPage = 5
+  const totalPage = Math.ceil(total / perPage)
+  // 計算 offset ,limit (一頁幾筆)
+  const limit = perPage
+  const offset = limit * (page - 1)
+  // 根據 offset 和 limit 取得資料
+  let [data] = await pool.execute(
+    'SELECT * FROM stock_prices WHERE stock_id=? ORDER BY date LIMIT ? OFFSET ?',
+    [req.params.stockId, perPage, offset]
+  )
+  // 回覆給前端
+  res.json({
+    pagination: {
+      perPage: perPage,
+      totalPage, // 變數名稱跟 key名稱一樣 可以直接放進來
+      page,
+    },
+    data,
+  })
+  // res.json(data)
 })
 
 app.use((req, res, next) => {
@@ -89,17 +130,17 @@ app.get('/test', (req, res, next) => {
 })
 
 // 12/24作業 新增股票
-app.use(express.json())
+
 app.post('/api/stocks', async (req, res, next) => {
-  // 從資料表撈資料
-  console.log(req.body)
+  // 從資料表撈資料 要使用 req.body
+  console.log('POST/api/stocks', req.body)
   let { stockId, stockName } = req.body
-  console.log(stockId, stockName)
+  console.log('解構資料', stockId, stockName)
   await pool.query('INSERT INTO stocks (id,name) VALUES (?,?)', [
     stockId,
     stockName,
   ])
-  res.json('新增成功')
+  res.json({ result: 'ok' })
 })
 
 // 放在所有的路由中間件的後面

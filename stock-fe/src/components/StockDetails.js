@@ -5,45 +5,64 @@ import moment from 'moment'
 
 const StockDetails = () => {
   const [error, setError] = useState(null)
-  const { stockId } = useParams()
-
+  const { stockId } = useParams() // 用來設定 url 上面的變數 => :stockId
   const [stockDetails, setStockDetails] = useState([])
+  // 新增兩個狀態
+  const [page, setPage] = useState(1)
+  const [totalPage, setTotalPage] = useState(0)
+
   useEffect(() => {
     console.log('抓細節資料')
-    async function getDetails() {
-      let response = await axios.get(
-        `http://localhost:3001/api/stocks/${stockId}`
-      )
-      console.log(response)
-      setStockDetails(response.data)
-    }
-    getDetails()
   }, [])
 
-  console.log('stock-detail', stockId)
+  useEffect(() => {
+    async function getDetails() {
+      let response = await axios.get(
+        `http://localhost:3001/api/stocks/${stockId}?page=${page}`
+      )
+      console.log(response)
+      setStockDetails(response.data.data)
 
-  return (
-    <div>
-      {error && <div>{error}</div>}
-      <ul>
+      setTotalPage(response.data.pagination.totalPage)
+    }
+    getDetails()
+  }, [page])
+
+  // console.log('stock-detail', stockId)
+  const getPages = () => {
+    let pages = []
+    for (let i = 1; i <= totalPage; i++) {
+      pages.push(
         <li
           style={{
             display: 'inline-block',
             margin: '2px',
-            // backgroundColor: page === i ? '#00d1b2' : '',
-            // borderColor: page === i ? '#00d1b2' : '#dbdbdb',
-            // color: page === i ? '#fff' : '#363636',
+            backgroundColor: page === i ? '#00d1b2' : '',
+            borderColor: page === i ? '#00d1b2' : '#dbdbdb',
+            color: page === i ? '#fff' : '#363636',
             borderWidth: '1px',
             width: '28px',
             height: '28px',
             borderRadius: '3px',
             textAlign: 'center',
           }}
+          key={i}
+          onClick={(e) => {
+            setPage(i)
+          }}
         >
-          1
+          {i}
         </li>
-      </ul>
-      目前在第 1 頁
+      )
+    }
+    return pages
+  }
+
+  return (
+    <div>
+      {error && <div>{error}</div>}
+      <ul>{getPages()}</ul>
+      目前在第 {page} 頁
       {stockDetails.map((detail, index) => {
         {
           /* detail.date.format('YYYY-MM-DD HH:mm') */
