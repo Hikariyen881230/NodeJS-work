@@ -67,6 +67,7 @@ router.get('/:stockId', async (req, res, next) => {
   // res.json(data)
 })
 
+// 12/24作業 新增股票
 router.post('/', async (req, res, next) => {
   // 從資料表撈資料 要使用 req.body
   console.log('POST/api/stocks', req.body)

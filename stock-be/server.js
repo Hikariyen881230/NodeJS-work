@@ -49,6 +49,10 @@ const stockRouter = require('./routers/stockRouter')
 // 將相同的路由移出來
 app.use('/api/stocks', stockRouter)
 
+// authRouter
+const authRouter = require('./routers/authRouter')
+app.use('/api/auth', authRouter)
+
 app.use((req, res, next) => {
   console.log('這裡是的一個中間件 C')
   next()
@@ -59,8 +63,6 @@ app.get('/test', (req, res, next) => {
   res.send('Hello Test 1')
   next()
 })
-
-// 12/24作業 新增股票
 
 // 放在所有的路由中間件的後面
 // 前面所有的路由都比不到對的網址時，就會掉到這裡來
