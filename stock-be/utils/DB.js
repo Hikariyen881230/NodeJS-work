@@ -13,4 +13,4 @@ let pool = mysql2.createPool({
   dateStrings: true,
 })
 
-module.export = pool
+module.exports = pool
