@@ -5,8 +5,8 @@ const Register = () => {
   const [member, setMember] = useState({
     email: 'test1234@gmai.com',
     name: 'text12333',
-    password: '1234',
-    confirmPassword: '1234',
+    password: '12345678',
+    confirmPassword: '12345678',
   })
 
   function handleChange(e) {
